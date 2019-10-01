@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "matched-filter", "src\match
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "util-cpp-common", "lib\util-cpp-common\src\util-cpp-common.vcxproj", "{9E8371D6-EAAB-42C2-B488-865A8216BDCC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmf", "src\libmf\libmf.vcxproj", "{8DE2E85E-15F2-4D9E-B204-D12093A04973}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{9E8371D6-EAAB-42C2-B488-865A8216BDCC}.Debug|x64.Build.0 = Debug - vs2019|x64
 		{9E8371D6-EAAB-42C2-B488-865A8216BDCC}.Release|x64.ActiveCfg = Release - vs2019|x64
 		{9E8371D6-EAAB-42C2-B488-865A8216BDCC}.Release|x64.Build.0 = Release - vs2019|x64
+		{8DE2E85E-15F2-4D9E-B204-D12093A04973}.Debug|x64.ActiveCfg = Debug|x64
+		{8DE2E85E-15F2-4D9E-B204-D12093A04973}.Debug|x64.Build.0 = Debug|x64
+		{8DE2E85E-15F2-4D9E-B204-D12093A04973}.Release|x64.ActiveCfg = Release|x64
+		{8DE2E85E-15F2-4D9E-B204-D12093A04973}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

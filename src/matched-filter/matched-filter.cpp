@@ -6,6 +6,8 @@
 #include "matched-filter.h"
 #include "matched-filterDlg.h"
 
+#include <libmf.hpp>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -59,6 +61,9 @@ BOOL CMatchedFilterApp::InitInstance()
     // TODO: You should modify this string to be something appropriate
     // such as the name of your company or organization
     SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+
+    // try call Rust library from cpp
+    TRACE(traceAppMsg, 0, "Rust says: '%s'.\n", libmf::ffi::hello());
 
     CMatchedFilterDlg dlg;
     m_pMainWnd = &dlg;
