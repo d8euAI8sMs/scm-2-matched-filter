@@ -18,9 +18,23 @@ fn main() {
         ..Default::default()
     };
 
-    cbindgen::generate_with_config(&crate_dir, config)
-      .unwrap()
-      .write_to_file(&output_file);
+    // working around the lack of `post_build` script in cargo
+    // 
+    // if this script fails, no regular build output is generated
+    // at all since no actual build will even be started!
+    // as a result, there are no compiler error messages at all
+    match cbindgen::generate_with_config(&crate_dir, config) {
+        Ok(hpp) => {
+            hpp.write_to_file(&output_file);
+            ()
+        },
+        Err(err) => {
+            // however, we MUST fail release build anyway
+            if (env::var("PROFILE").unwrap() == "release") {
+                panic!("failed to generate hpp file: {:?}", err);
+            }
+        },
+    }
 }
 
 fn target_dir() -> PathBuf {
