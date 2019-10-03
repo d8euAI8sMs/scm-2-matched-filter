@@ -123,6 +123,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="matched-filter.h" />
     <ClInclude Include="matched-filterDlg.h" />
+    <ClInclude Include="model.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
