@@ -137,13 +137,21 @@ void CMatchedFilterDlg::OnBnClickedButton3()
     FillPlot(d.i, *m_data.i.plots[0].data);
     FillPlot(d.q, *m_data.q.plots[0].data);
 
+    for (size_t i = 0; i < 4; ++i) {
+        FillPlot(d.f[i], *m_data.f.plots[i].data);
+        m_data.f.autoworld->adjust(*m_data.f.plots[i].data);
+    }
+
     m_data.i.autoworld->setup(*m_data.i.plots[0].data);
     m_data.q.autoworld->setup(*m_data.q.plots[0].data);
+    m_data.f.autoworld->flush();
 
     m_cIPlot.RedrawBuffer(); m_cIPlot.SwapBuffers();
     m_cIPlot.RedrawWindow();
     m_cQPlot.RedrawBuffer(); m_cQPlot.SwapBuffers();
     m_cQPlot.RedrawWindow();
+    m_cFPlot.RedrawBuffer(); m_cFPlot.SwapBuffers();
+    m_cFPlot.RedrawWindow();
 }
 
 libmf::ffi::Params CMatchedFilterDlg::MakeParams()

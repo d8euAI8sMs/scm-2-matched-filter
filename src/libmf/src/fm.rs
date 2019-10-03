@@ -120,7 +120,7 @@ fn make_gold_seqs() -> Vec<Vec<bool>> {
     let (_, seq1) = reg::Reg31::new(0b10100).collect();
     let (_, seq2) = reg::Reg31::new(0b11110).collect();
 
-    (0..3)
+    (0..4)
         .map(|i| seq1 ^ reg::Reg31::rot(seq2, i))
         .map(|s| bits31(s))
         .collect()
