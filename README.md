@@ -4,7 +4,7 @@ Part of [d8euAI8sMs](https://github.com/d8euAI8sMs) namespace. See [`learning` r
 
 ## About
 
-BPSK demodulation of binary data encoded with the help of Gold sequence by the means of matched filter.
+QPSK demodulation of binary data encoded with the help of Gold sequence by the means of matched filter.
 
 ## Details
 
