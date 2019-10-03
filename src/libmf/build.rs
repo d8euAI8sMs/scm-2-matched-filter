@@ -15,6 +15,7 @@ fn main() {
 
     let config = Config {
         namespaces: Some(vec!(String::from("libmf"), String::from("ffi"))),
+        include_guard: Some(String::from("LIBMF_H")),
         ..Default::default()
     };
 
