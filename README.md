@@ -6,6 +6,8 @@ Part of [d8euAI8sMs](https://github.com/d8euAI8sMs) namespace. See [`learning` r
 
 QPSK demodulation of binary data encoded with the help of Gold sequence by the means of matched filter.
 
+![](ui.png)
+
 ## Details
 
 Rust and C++ interop (Rust 1.38.0, Visual Studio 2019, x64 only). GUI is implemented in C++ (MFC), all computations are writted in Rust (separate dll).
