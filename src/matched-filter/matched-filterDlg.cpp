@@ -152,6 +152,10 @@ void CMatchedFilterDlg::OnBnClickedButton3()
     m_cQPlot.RedrawWindow();
     m_cFPlot.RedrawBuffer(); m_cFPlot.SwapBuffers();
     m_cFPlot.RedrawWindow();
+
+    m_demoResults.err = d.e;
+
+    UpdateData(FALSE);
 }
 
 libmf::ffi::Params CMatchedFilterDlg::MakeParams()
