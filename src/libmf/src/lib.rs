@@ -11,10 +11,14 @@ pub extern fn hello() -> *const u8 {
 
 #[repr(C)]
 pub struct Params {
-    n: u32,
+    n: usize,
     sample_rate: f64,
     bit_rate: f64,
     snr: f64,
+    snr_min: f64,
+    snr_max: f64,
+    snr_n: usize,
+    tests: usize,
 }
 
 #[repr(C)]
@@ -94,6 +98,10 @@ fn to_their_params(p: &Params) -> fm::Params {
         n: p.n,
         sample_rate: p.sample_rate,
         bit_rate: p.bit_rate,
-        snr: p.snr
+        snr: p.snr,
+        snr_min: p.snr_min,
+        snr_max: p.snr_max,
+        snr_n: p.snr_n,
+        tests: p.tests,
     }
 }

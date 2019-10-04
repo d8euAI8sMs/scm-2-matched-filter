@@ -13,10 +13,14 @@ pub struct Pt {
 }
 
 pub struct Params {
-    pub n: u32,
+    pub n: usize,
     pub sample_rate: f64,
     pub bit_rate: f64,
     pub snr: f64,
+    pub snr_min: f64,
+    pub snr_max: f64,
+    pub snr_n: usize,
+    pub tests: usize,
 }
 
 pub struct Demo {

@@ -167,6 +167,10 @@ libmf::ffi::Params CMatchedFilterDlg::MakeParams()
     p.n = m_data.params->n;
     p.sample_rate = m_data.params->sampling_rate;
     p.snr = m_data.params->snr;
+    p.snr_min = m_data.params->snr_from;
+    p.snr_max = m_data.params->snr_to;
+    p.snr_n = m_data.params->snr_count;
+    p.tests = m_data.params->num_of_tests;
     return p;
 }
 
