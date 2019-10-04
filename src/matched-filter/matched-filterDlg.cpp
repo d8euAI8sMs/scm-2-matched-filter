@@ -137,6 +137,8 @@ void CMatchedFilterDlg::OnBnClickedButton3()
     FillPlot(d.i, *m_data.i.plots[0].data);
     FillPlot(d.q, *m_data.q.plots[0].data);
 
+    m_data.f.autoworld->clear();
+
     for (size_t i = 0; i < 4; ++i) {
         FillPlot(d.f[i], *m_data.f.plots[i].data);
         m_data.f.autoworld->adjust(*m_data.f.plots[i].data);
