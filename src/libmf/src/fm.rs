@@ -136,21 +136,17 @@ fn make_gold_seqs() -> Vec<Vec<bool>> {
 
     (0..4)
         .map(|i| seq1 ^ reg::Reg31::rot(seq2, i))
-        .map(|s| bits31(s))
+        .map(|s| bits32(s))
         .collect()
 }
 
 fn make_gold_filters(p: &Params, s: &Vec<Vec<bool>>) -> Vec<Vec<Complex64>> {
-    s.iter().map(|s| {
-        let mut s0 = s.clone();
-        s0.push(false);
-        qpsk(p, &s0)
-    }).collect()
+    s.iter().map(|s| qpsk(p, s)).collect()
 }
 
-fn bits31(n: u32) -> Vec<bool> {
+fn bits32(n: u32) -> Vec<bool> {
     let mut v = Vec::new();
-    v.resize(31, false);
+    v.resize(32, false);
     for i in 0..31 {
         v[i] = ((n >> i) & 1) == 1
     }
