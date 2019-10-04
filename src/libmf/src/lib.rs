@@ -28,6 +28,7 @@ pub struct Demo {
     i: Signal,
     q: Signal,
     f: [Signal; 4],
+    e: f64,
 }
 
 #[repr(C)]
@@ -85,6 +86,7 @@ fn to_our_demo(d: &fm::Demo, r: &mut Demo) {
     for (i, f) in d.f.iter().enumerate() {
         r.f[i] = to_buf(to_our_pt(f));
     }
+    r.e = d.e;
 }
 
 fn to_their_params(p: &Params) -> fm::Params {

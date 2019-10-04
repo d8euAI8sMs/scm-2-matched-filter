@@ -23,6 +23,7 @@ pub struct Demo {
     pub i: Vec<Pt>,
     pub q: Vec<Pt>,
     pub f: [Vec<Pt>; 4],
+    pub e: f64,
 }
 
 impl Demo {
@@ -31,6 +32,7 @@ impl Demo {
             i: Vec::new(),
             q: Vec::new(),
             f: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+            e: 0.0
         }
     }
 }
@@ -38,14 +40,30 @@ impl Demo {
 pub fn demo(p: Params) -> Demo {
     let mut r = Demo::new();
 
-    let mut iq = gen_iq(&p);
+    let symbs = gen_symbs((p.n / 2) as usize);
+
+    let mut iq = gen_iq(&p, &symbs);
     noisify_complex(&mut iq, p.snr);
     split_complex(&p, &iq, &mut r.i, &mut r.q);
     let res = apply_filter(&p, &iq);
     for (i, f) in r.f.iter_mut().enumerate() {
         timify(&p, &res[i], f);
     }
+
+    let dec = decode(&p, &res);
+
+    r.e = compare(&symbs, &dec);
+
     r
+}
+
+fn compare(v1: &Vec<u8>, v2: &Vec<u8>) -> f64 {
+    let n = v1.len().min(v2.len());
+    let n0 = v1.iter()
+        .zip(v2.iter())
+        .filter(|(a, b)| a == b)
+        .count();
+    (n0 as f64) / (n as f64)
 }
 
 fn noisify_complex(v: &mut Vec<Complex64>, snr: f64) {
@@ -72,12 +90,8 @@ fn rand_std_complex() -> Complex64 {
     Complex64::new(rand_std(), rand_std())
 }
 
-fn gen_iq(p: &Params) -> Vec<Complex64> {
+fn gen_iq(p: &Params, symbs: &Vec<u8>) -> Vec<Complex64> {
     let gs = make_gold_seqs();
-
-    let symb_n = (p.n / 2) as usize;
-
-    let symbs = gen_symbs(symb_n);
 
     let data = symbs.iter()
         .flat_map(|s| &gs[*s as usize])
@@ -144,7 +158,7 @@ fn bits31(n: u32) -> Vec<bool> {
 }
 
 fn qpsk(p: &Params, d: &Vec<bool>) -> Vec<Complex64> {
-    let symb_br = 2.0 * p.bit_rate;
+    let symb_br = p.bit_rate / 2.0;
     let symb_t = 1.0 / symb_br;
     let symb_n = (d.len() / 2) as usize;
     let n = ((symb_t * (symb_n as f64)) * p.sample_rate).floor() as usize;
@@ -183,4 +197,53 @@ fn correlate_multi(s1: &[Complex64], s2: &[Complex64]) -> Vec<f64> {
 fn apply_filter(p: &Params, d: &Vec<Complex64>) -> Vec<Vec<f64>> {
     make_gold_filters(p, &make_gold_seqs()).iter()
         .map(|gsi| correlate_multi(&d, &gsi)).collect()
+}
+
+fn filter_max(p: &Params, v: &Vec<f64>, t: f64) -> Vec<f64> {
+    let l = t * p.sample_rate;
+    let n = ((v.len() as f64) / l).ceil() as usize;
+    let ln = l.floor() as usize;
+
+    let mut res = Vec::new();
+    res.resize(n, 0.0);
+
+    for i in 0..res.len() {
+        let j = ((i as f64) * l).round() as usize;
+        let j1 = if i + 1 == 1         { j } else { j - ln / 2};
+        let j2 = if i + 1 == res.len() { j } else { j + ln / 2};
+        res[i] = v[j1..j2].iter().map(|&x| x).max_by(cmp_f64).unwrap();
+    }
+
+    res
+}
+
+fn decode(p: &Params, f: &Vec<Vec<f64>>) -> Vec<u8> {
+    let gbit_t = 1.0 / p.bit_rate;
+    let symb_t = 32.0 * gbit_t;
+
+    let wnd_t = symb_t / 2.0;
+    
+    let vecs: Vec<_> = f.iter().map(|v| filter_max(&p, v, wnd_t)).collect();
+
+    let mut res = Vec::new();
+    res.resize(vecs[0].len() / 2, 0_u8);
+
+    for i in 0..res.len() {
+        let mut j = 0_u8; let mut t = vecs[0][2 * i];
+        if t < vecs[1][2 * i] { j = 1_u8; t = vecs[1][2 * i]; };
+        if t < vecs[2][2 * i] { j = 2_u8; t = vecs[2][2 * i]; };
+        if t < vecs[3][2 * i] { j = 3_u8; };
+        res[i] = j;
+    }
+
+    res
+}
+
+fn cmp_f64(a: &f64, b: &f64) -> std::cmp::Ordering {
+    if a < b {
+        return std::cmp::Ordering::Less;
+    } else if a > b {
+        return std::cmp::Ordering::Greater;
+    }
+    return std::cmp::Ordering::Equal;
 }
