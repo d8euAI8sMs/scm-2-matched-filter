@@ -21,7 +21,7 @@ namespace model
 
     struct parameters
     {
-        double n;
+        int n;
         double bitrate;
         double sampling_rate;
         double snr;

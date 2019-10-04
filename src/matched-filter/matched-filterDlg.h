@@ -46,4 +46,7 @@ public:
     afx_msg void OnBnClickedButton3();
     libmf::ffi::Params MakeParams();
     void FillPlot(const libmf::ffi::Signal& s, model::points_t& pts);
+    afx_msg void OnBnClickedButton2();
+    afx_msg void OnBnClickedButton1();
+    virtual void OnSimulation();
 };

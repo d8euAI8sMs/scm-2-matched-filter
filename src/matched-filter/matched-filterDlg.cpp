@@ -44,6 +44,8 @@ BEGIN_MESSAGE_MAP(CMatchedFilterDlg, CSimulationDialog)
     ON_WM_PAINT()
     ON_WM_QUERYDRAGICON()
     ON_BN_CLICKED(IDC_BUTTON3, &CMatchedFilterDlg::OnBnClickedButton3)
+    ON_BN_CLICKED(IDC_BUTTON2, &CMatchedFilterDlg::OnBnClickedButton2)
+    ON_BN_CLICKED(IDC_BUTTON1, &CMatchedFilterDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 // CMatchedFilterDlg message handlers
@@ -180,4 +182,42 @@ void CMatchedFilterDlg::FillPlot(const libmf::ffi::Signal& s, model::points_t& p
     for (size_t i = 0; i < s.n; ++i) {
         pts[i] = { s.pts[i].x, s.pts[i].y };
     }
+}
+
+void CMatchedFilterDlg::OnBnClickedButton2()
+{
+    UpdateData(TRUE);
+    StartSimulationThread();
+}
+
+void CMatchedFilterDlg::OnBnClickedButton1()
+{
+    StopSimulationThread();
+}
+
+using callback_t = std::function<bool(libmf::ffi::Sim)>;
+
+uint32_t sim_callback(void* param, libmf::ffi::Sim val) {
+    return (*static_cast<callback_t*>(param))(val) ? TRUE : FALSE;
+}
+
+void CMatchedFilterDlg::OnSimulation() {
+    auto update = [this]() {
+        m_data.results.autoworld->setup(*m_data.results.plots[0].data);
+        m_cResultsPlot.RedrawBuffer(); m_cResultsPlot.SwapBuffers();
+        Invoke([this]() { m_cResultsPlot.RedrawWindow(); });
+    };
+    callback_t fn = [&](auto val) {
+        m_data.results.plots[0].data->emplace_back(val.snr, val.p);
+        update();
+        return m_bWorking;
+    };
+
+    m_data.results.plots[0].data->clear();
+
+    libmf::ffi::sim(MakeParams(), &sim_callback, &fn);
+
+    update();
+
+    CSimulationDialog::OnSimulation();
 }
