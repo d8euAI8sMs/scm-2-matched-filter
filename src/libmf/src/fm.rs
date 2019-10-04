@@ -1,10 +1,12 @@
 extern crate rand;
 extern crate num;
+extern crate rayon;
 
 mod reg;
 
 use num::Zero;
 use num::complex::Complex64;
+use rayon::prelude::*;
 
 #[derive(Clone)]
 pub struct Pt {
@@ -72,7 +74,7 @@ pub fn sim<F>(p: Params, mut cb: F) where F: FnMut(Sim) -> bool {
 
     for i in 0..p.snr_n {
         let snr = p.snr_min - (p.snr_min - p.snr_max) / (p.snr_n as f64) * (i as f64);
-        let p0 = (0..p.tests).map(|_| {
+        let p0 = (0..p.tests).into_par_iter().map(|_| {
             let mut iq = gen_iq(&p, &symbs);
             noisify_complex(&mut iq, snr);
             let res = apply_filter(&p, &iq);

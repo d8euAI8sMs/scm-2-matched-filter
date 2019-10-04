@@ -10,6 +10,7 @@ build = "build.rs"
 [dependencies]
 rand = "0.7.2"
 num = "0.2.0"
+rayon = "1.2.0"
 
 [lib]
 name = "libmf"
