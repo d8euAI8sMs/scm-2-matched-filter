@@ -1,5 +1,7 @@
 mod fm;
 
+use std::ffi::c_void;
+
 // dummy function
 
 #[no_mangle]
@@ -36,6 +38,12 @@ pub struct Demo {
 }
 
 #[repr(C)]
+pub struct Sim {
+    pub snr: f64,
+    pub p: f64,
+}
+
+#[repr(C)]
 pub struct Pt {
     x: f64,
     y: f64,
@@ -60,6 +68,13 @@ pub extern "C" fn release_demo(r: &mut Demo) {
 pub extern "C" fn demo(p: Params, r: &mut Demo) {
     let d = fm::demo(to_their_params(&p));
     to_our_demo(&d, r);
+}
+
+type SimCallback = extern fn(*mut c_void, Sim) -> u32;
+
+#[no_mangle]
+pub extern "C" fn sim(p: Params, cb: SimCallback, param: *mut c_void) {
+    fm::sim(to_their_params(&p), |s| cb(param, to_out_sim(&s)) != 0);
 }
 
 fn free_buf(buf: &Signal) {
@@ -104,4 +119,8 @@ fn to_their_params(p: &Params) -> fm::Params {
         snr_n: p.snr_n,
         tests: p.tests,
     }
+}
+
+fn to_out_sim(s: &fm::Sim) -> Sim {
+    Sim { snr: s.snr, p: s.p }
 }

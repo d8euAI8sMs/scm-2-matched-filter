@@ -41,6 +41,12 @@ impl Demo {
     }
 }
 
+#[derive(Clone, Copy)]
+pub struct Sim {
+    pub snr: f64,
+    pub p: f64,
+}
+
 pub fn demo(p: Params) -> Demo {
     let mut r = Demo::new();
 
@@ -59,6 +65,22 @@ pub fn demo(p: Params) -> Demo {
     r.e = compare(&symbs, &dec);
 
     r
+}
+
+pub fn sim<F>(p: Params, mut cb: F) where F: FnMut(Sim) -> bool {
+    let symbs = gen_symbs((p.n / 2) as usize);
+
+    for i in 0..p.snr_n {
+        let snr = p.snr_min - (p.snr_min - p.snr_max) / (p.snr_n as f64) * (i as f64);
+        let p0 = (0..p.tests).map(|_| {
+            let mut iq = gen_iq(&p, &symbs);
+            noisify_complex(&mut iq, snr);
+            let res = apply_filter(&p, &iq);
+            let dec = decode(&p, &res);
+            compare(&symbs, &dec)
+        }).sum::<f64>() / (p.tests as f64);
+        if !cb(Sim { snr: snr, p: p0 }) { break; }
+    }
 }
 
 fn compare(v1: &Vec<u8>, v2: &Vec<u8>) -> f64 {
